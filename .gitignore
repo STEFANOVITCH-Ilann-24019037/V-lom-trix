@@ -1,0 +1,28 @@
+# Claude
+.claude/
+
+# Backend Laravel
+backend/vendor/
+backend/.env
+backend/.env.backup
+backend/storage/logs/*.log
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/views/
+backend/bootstrap/cache/*.php
+backend/database/database.sqlite
+
+# Web App
+web-app/node_modules/
+web-app/dist/
+
+# Mobile App
+mobile-app/node_modules/
+mobile-app/.expo/
+mobile-app/dist/
+mobile-app/android/
+mobile-app/ios/
+
+# OS
+.DS_Store
+Thumbs.db
