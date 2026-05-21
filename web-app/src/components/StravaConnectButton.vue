@@ -13,11 +13,11 @@ async function connectStrava() {
 
 <template>
   <button @click="connectStrava" :disabled="loading"
-    style="display:flex; align-items:center; gap:8px; background:#FC4C02; color:#fff; font-family:'Outfit',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.04em; padding:9px 18px; border-radius:8px; border:none; cursor:pointer; transition:opacity 0.2s;"
+    style="display:inline-flex; align-items:center; gap:8px; background:#FC4C02; color:#fff; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; padding:9px 16px; border-radius:8px; border:none; cursor:pointer; transition:opacity 0.2s; white-space:nowrap;"
     :style="{ opacity: loading ? 0.6 : 1 }">
-    <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+    <svg width="15" height="15" fill="white" viewBox="0 0 24 24">
       <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/>
     </svg>
-    {{ loading ? 'Redirection...' : 'Connecter Strava' }}
+    {{ loading ? 'Redirection…' : 'Connecter Strava' }}
   </button>
 </template>

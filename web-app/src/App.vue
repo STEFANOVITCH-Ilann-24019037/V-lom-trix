@@ -13,7 +13,7 @@ const hideNav = ['Login', 'Register']
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div style="min-height:100vh; background:#F7F8FA;"  >
     <NavigationBar v-if="auth.token && !hideNav.includes(route.name)" />
     <router-view />
   </div>
