@@ -12,12 +12,10 @@ async function connectStrava() {
 </script>
 
 <template>
-  <button
-    @click="connectStrava"
-    :disabled="loading"
-    class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors disabled:opacity-60"
-  >
-    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+  <button @click="connectStrava" :disabled="loading"
+    style="display:flex; align-items:center; gap:8px; background:#FC4C02; color:#fff; font-family:'Outfit',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.04em; padding:9px 18px; border-radius:8px; border:none; cursor:pointer; transition:opacity 0.2s;"
+    :style="{ opacity: loading ? 0.6 : 1 }">
+    <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
       <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/>
     </svg>
     {{ loading ? 'Redirection...' : 'Connecter Strava' }}

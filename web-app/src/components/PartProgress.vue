@@ -2,23 +2,21 @@
 import { computed } from 'vue'
 import api from '../api/client'
 
-const props = defineProps({
-  part: { type: Object, required: true },
-})
-
+const props = defineProps({ part: { type: Object, required: true } })
 const emit = defineEmits(['changed'])
 
-const barColor = computed(() => {
-  if (props.part.wear_percentage >= 90) return 'bg-danger'
-  if (props.part.wear_percentage >= 70) return 'bg-warning'
-  return 'bg-success'
+const pct = computed(() => props.part.wear_percentage)
+const wearColor = computed(() => {
+  if (pct.value >= 90) return 'var(--danger)'
+  if (pct.value >= 70) return 'var(--warning)'
+  return 'var(--success)'
 })
-
-const textColor = computed(() => {
-  if (props.part.wear_percentage >= 90) return 'text-danger'
-  if (props.part.wear_percentage >= 70) return 'text-warning'
-  return 'text-success'
+const wearBg = computed(() => {
+  if (pct.value >= 90) return 'var(--danger-dim)'
+  if (pct.value >= 70) return 'var(--warning-dim)'
+  return 'var(--success-dim)'
 })
+const isCritical = computed(() => pct.value >= 90)
 
 async function changePart() {
   if (!confirm(`Confirmer le remplacement de "${props.part.name}" ?`)) return
@@ -28,26 +26,35 @@ async function changePart() {
 </script>
 
 <template>
-  <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-    <div class="flex items-center justify-between mb-2">
-      <span class="font-medium text-gray-800">{{ part.name }}</span>
-      <span :class="[textColor, 'font-bold text-sm']">{{ part.wear_percentage }}%</span>
+  <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; transition:border-color 0.2s;"
+    :style="{ borderColor: isCritical ? 'rgba(255,53,53,0.3)' : 'var(--border)' }">
+
+    <!-- Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+      <span style="font-size:13px; font-weight:600; color:var(--text);">{{ part.name }}</span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700;" :style="{ color: wearColor }">
+          {{ pct }}%
+        </span>
+        <button v-if="pct >= 70" @click="changePart"
+          style="font-size:11px; font-weight:700; letter-spacing:0.05em; padding:4px 10px; border-radius:5px; border:none; cursor:pointer; font-family:'Outfit',sans-serif; transition:opacity 0.2s;"
+          :style="{ background: wearColor, color: pct >= 90 ? '#fff' : '#06060a' }">
+          CHANGER
+        </button>
+      </div>
     </div>
-    <div class="w-full bg-gray-100 rounded-full h-3 mb-2">
-      <div
-        :class="[barColor, 'h-3 rounded-full transition-all duration-500']"
-        :style="{ width: `${part.wear_percentage}%` }"
-      ></div>
+
+    <!-- Bar -->
+    <div style="height:6px; border-radius:3px; overflow:hidden; background:var(--border); margin-bottom:8px;">
+      <div class="bar-animate"
+        :class="{ 'glow-danger': isCritical }"
+        :style="{ width: `${pct}%`, height:'6px', background: wearColor, borderRadius:'3px' }">
+      </div>
     </div>
-    <div class="flex items-center justify-between">
-      <span class="text-xs text-gray-500">{{ part.remaining_km }} km restants</span>
-      <button
-        v-if="part.wear_percentage >= 70"
-        @click="changePart"
-        class="text-xs bg-primary text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        Changer
-      </button>
+
+    <!-- Footer -->
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted);">
+      {{ part.remaining_km.toLocaleString() }} km restants
     </div>
   </div>
 </template>

@@ -4,10 +4,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#2563EB',
-        success: '#16A34A',
-        warning: '#EA580C',
-        danger: '#DC2626',
+        lime:    '#CBFF00',
+        surface: '#0e0e14',
+        card:    '#13131a',
+        border:  '#1f1f2e',
+        danger:  '#ff3535',
+        warning: '#ff9500',
+        success: '#00e676',
+      },
+      fontFamily: {
+        display: ['Bebas Neue', 'sans-serif'],
+        body:    ['Outfit', 'sans-serif'],
+        mono:    ['JetBrains Mono', 'monospace'],
       },
     },
   },

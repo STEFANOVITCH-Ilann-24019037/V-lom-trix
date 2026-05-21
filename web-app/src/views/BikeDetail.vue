@@ -1,23 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api/client'
 import PartProgress from '../components/PartProgress.vue'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
-import { Line } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from 'chart.js'
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
 const route = useRoute()
 const router = useRouter()
@@ -37,42 +23,84 @@ async function handleDelete() {
   router.push('/dashboard')
 }
 
-const typeLabel = { route: 'Route', vtt: 'VTT', ville: 'Ville', gravel: 'Gravel' }
+const typeLabel = { route: 'ROUTE', vtt: 'VTT', ville: 'VILLE', gravel: 'GRAVEL' }
+const typeIcon  = { route: '🚴', vtt: '🚵', ville: '🏙️', gravel: '🌾' }
+
+const avgWear = computed(() => bike.value?.wear_percentage ?? 0)
+const wearColor = computed(() => {
+  if (avgWear.value >= 90) return 'var(--danger)'
+  if (avgWear.value >= 70) return 'var(--warning)'
+  return 'var(--success)'
+})
 
 onMounted(load)
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <button @click="router.push('/dashboard')" class="text-primary mb-6 flex items-center gap-1 hover:underline text-sm">
-      ← Retour au dashboard
+  <div style="max-width:900px; margin:0 auto; padding:32px 24px;">
+
+    <!-- Back -->
+    <button @click="router.push('/dashboard')"
+      style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); background:transparent; border:none; cursor:pointer; margin-bottom:28px; font-family:'Outfit',sans-serif; transition:color 0.2s; padding:0;"
+      @mouseover="$event.target.style.color='var(--accent)'" @mouseleave="$event.target.style.color='var(--muted)'">
+      ← Retour
     </button>
 
     <LoadingSpinner v-if="loading" />
 
     <template v-else-if="bike">
-      <div class="flex items-start justify-between mb-8">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">{{ bike.name }}</h1>
-          <div class="flex items-center gap-3 mt-2">
-            <span class="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{{ typeLabel[bike.type] }}</span>
-            <span class="text-sm text-gray-500">{{ bike.current_km.toLocaleString() }} km</span>
+
+      <!-- Hero header -->
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:24px; position:relative; overflow:hidden;">
+        <!-- Subtle accent bg -->
+        <div style="position:absolute; right:-40px; top:-40px; width:200px; height:200px; background:radial-gradient(circle, var(--accent-dim) 0%, transparent 70%); pointer-events:none;"></div>
+
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; position:relative;">
+          <div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:0.15em; color:var(--muted); font-family:'Outfit',sans-serif;">{{ typeLabel[bike.type] }}</span>
+              <span>{{ typeIcon[bike.type] }}</span>
+            </div>
+            <h1 style="font-family:'Bebas Neue',sans-serif; font-size:40px; letter-spacing:0.04em; color:var(--text); margin:0 0 20px; line-height:1;">{{ bike.name }}</h1>
+
+            <!-- Stats -->
+            <div style="display:flex; gap:24px;">
+              <div>
+                <div style="font-size:10px; font-weight:700; letter-spacing:0.15em; color:var(--muted); margin-bottom:4px;">KILOMÉTRAGE</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:700; color:var(--text);">
+                  {{ bike.current_km.toLocaleString() }}<span style="font-size:14px; color:var(--muted); margin-left:2px;">km</span>
+                </div>
+              </div>
+              <div style="width:1px; background:var(--border);"></div>
+              <div>
+                <div style="font-size:10px; font-weight:700; letter-spacing:0.15em; color:var(--muted); margin-bottom:4px;">USURE MOY.</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:700;" :style="{ color: wearColor }">
+                  {{ avgWear }}<span style="font-size:14px; margin-left:2px;">%</span>
+                </div>
+              </div>
+            </div>
           </div>
+
+          <button @click="handleDelete"
+            style="font-size:12px; font-weight:600; padding:8px 14px; border-radius:7px; border:1px solid rgba(255,53,53,0.3); color:var(--danger); background:var(--danger-dim); cursor:pointer; font-family:'Outfit',sans-serif; transition:all 0.2s; letter-spacing:0.04em;">
+            SUPPRIMER
+          </button>
         </div>
-        <button @click="handleDelete" class="text-sm text-red-500 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors">
-          Supprimer
-        </button>
+
+        <!-- Overall progress bar -->
+        <div style="height:6px; background:var(--border); border-radius:3px; margin-top:20px; overflow:hidden;">
+          <div class="bar-animate" :style="{ width:`${avgWear}%`, height:'6px', background: wearColor, borderRadius:'3px' }"></div>
+        </div>
       </div>
 
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Pièces</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <PartProgress
-          v-for="part in bike.parts"
-          :key="part.id"
-          :part="part"
-          @changed="load"
-        />
+      <!-- Parts -->
+      <p style="font-size:11px; font-weight:700; letter-spacing:0.15em; color:var(--muted); margin:0 0 12px; font-family:'Outfit',sans-serif;">COMPOSANTS</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+        <div v-for="(part, i) in bike.parts" :key="part.id" class="slide-up" :style="{ animationDelay: `${i * 0.06}s` }">
+          <PartProgress :part="part" @changed="load" />
+        </div>
       </div>
+
     </template>
   </div>
 </template>
